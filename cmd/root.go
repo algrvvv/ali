@@ -26,6 +26,7 @@ import (
 	"maps"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -41,24 +42,28 @@ var (
 
 	// rootCmd represents the base command when called without any subcommands
 	rootCmd = &cobra.Command{
-		Use:               "ali",
-		Short:             "ali - cli app for your aliases",
-		Args:              cobra.ArbitraryArgs,
-		ValidArgsFunction: getAliases,
-		Run: func(_ *cobra.Command, args []string) {
+		Use:                "ali",
+		Short:              "ali - cli app for your aliases",
+		Args:               cobra.ArbitraryArgs,
+		ValidArgsFunction:  getAliases,
+		FParseErrWhitelist: cobra.FParseErrWhitelist{UnknownFlags: true},
+		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) == 0 {
 				fmt.Println("use help for see usage")
 				return
 			}
 			alias := args[0]
 			params := args[1:]
+			unknownFlags := parseUnknownFlags(os.Args[1:])
 
-			logger.SaveDebugf("got command: %s", alias)
+			logger.SaveDebugf("got alias: %s", alias)
+			logger.SaveDebugf("got params(%d): %v", len(params), params)
+			logger.SaveDebugf("got unknown flags: %v", unknownFlags)
 
 			command := utils.GetAlias(alias)
 			logger.SaveDebugf("got command: %s", command)
 
-			utils.ExecuteAlias(command, params)
+			utils.ExecuteAlias(command, params, unknownFlags)
 		},
 	}
 )
@@ -136,6 +141,22 @@ func initLocalConfig() {
 
 	if err := viper.MergeInConfig(); err != nil {
 		logger.SaveDebugf("local config not found")
+	} else {
+		logger.SaveDebugf("local config loaded")
 	}
-	logger.SaveDebugf("local config loaded")
+}
+
+func parseUnknownFlags(args []string) map[string]string {
+	flags := make(map[string]string)
+	for _, arg := range args {
+		if strings.HasPrefix(arg, "--") {
+			parts := strings.SplitN(arg[2:], "=", 2)
+			if len(parts) == 2 {
+				flags[parts[0]] = parts[1]
+			} else {
+				flags[parts[0]] = ""
+			}
+		}
+	}
+	return flags
 }
