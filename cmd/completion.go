@@ -22,7 +22,6 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -51,7 +50,7 @@ var completionCmd = &cobra.Command{
 		}
 
 		utils.CheckError(err)
-		fmt.Printf("completion for %s generated\n", args[0])
+		// fmt.Printf("completion for %s generated\n", args[0])
 	},
 }
 
