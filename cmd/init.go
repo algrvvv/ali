@@ -34,7 +34,7 @@ import (
 // initCmd represents the init command
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "A brief description of your command",
+	Short: "Init new local config",
 	Run: func(cmd *cobra.Command, args []string) {
 		dir, err := os.Getwd()
 		utils.CheckError(err)

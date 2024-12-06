@@ -42,7 +42,7 @@ var (
 	// rootCmd represents the base command when called without any subcommands
 	rootCmd = &cobra.Command{
 		Use:               "ali",
-		Short:             "A brief description of your application",
+		Short:             "ali - cli app for your aliases",
 		Args:              cobra.ArbitraryArgs,
 		ValidArgsFunction: getAliases,
 		Run: func(_ *cobra.Command, args []string) {

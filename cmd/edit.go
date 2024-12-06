@@ -39,7 +39,7 @@ var (
 
 	editCmd = &cobra.Command{
 		Use:   "edit",
-		Short: "A brief description of your command",
+		Short: "Edit global or local config",
 		Run: func(_ *cobra.Command, args []string) {
 			editor := viper.GetString("app.editor")
 			if editor == "" {

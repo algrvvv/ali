@@ -36,7 +36,7 @@ import (
 // setupCmd represents the setup command
 var setupCmd = &cobra.Command{
 	Use:   "setup",
-	Short: "A brief description of your command",
+	Short: "Setup global config",
 	Run: func(_ *cobra.Command, args []string) {
 		home, err := os.UserHomeDir()
 		utils.CheckError(err)
