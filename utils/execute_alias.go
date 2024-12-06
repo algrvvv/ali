@@ -9,7 +9,24 @@ import (
 	"github.com/algrvvv/ali/logger"
 )
 
-func ExecuteAlias(command string, args []string) {
+func ExecuteAlias(command string, args []string, flags map[string]string) {
+	// проверяем аргументы, чтобы при пробелах в них мы не получили их как разные аргументы
+	for i := range args {
+		if strings.Contains(args[i], " ") {
+			logger.SaveDebugf(
+				"founded arg that contains spaces: %s; quotation marks enabled",
+				args[i],
+			)
+			args[i] = fmt.Sprintf("\"%s\"", args[i])
+		}
+	}
+
+	for key, value := range flags {
+		k := fmt.Sprintf("<%s>", key)
+		logger.SaveDebugf("parse command for find flag: %s with value: %s", k, value)
+		command = strings.ReplaceAll(command, k, value)
+	}
+
 	cmdArgs := fmt.Sprintf("%s %s", command, strings.Join(args, " "))
 	logger.SaveDebugf("got cmd args: %s", cmdArgs)
 	if strings.TrimSpace(cmdArgs) == "" {
