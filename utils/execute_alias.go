@@ -22,9 +22,13 @@ func ExecuteAlias(command string, args []string, flags map[string]string) {
 	}
 
 	for key, value := range flags {
-		k := fmt.Sprintf("<%s>", key)
+		k := fmt.Sprintf("<%s>", strings.ReplaceAll(key, "-", ""))
 		logger.SaveDebugf("parse command for find flag: %s with value: %s", k, value)
-		command = strings.ReplaceAll(command, k, value)
+		if strings.Contains(command, k) {
+			command = strings.ReplaceAll(command, k, value)
+		} else {
+			command += " " + key
+		}
 	}
 
 	cmdArgs := fmt.Sprintf("%s %s", command, strings.Join(args, " "))

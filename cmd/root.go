@@ -168,8 +168,14 @@ func initLogger() {
 func parseUnknownFlags(args []string) map[string]string {
 	flags := make(map[string]string)
 	for _, arg := range args {
-		if strings.HasPrefix(arg, "--") {
-			parts := strings.SplitN(arg[2:], "=", 2)
+		// NOTE: пропускаем зарезервированный ключ
+		// TODO: придумать как избежать этого, если вдруг нужно будет использовать такой ключ
+		if arg == "-D" || arg == "--debug" {
+			continue
+		}
+
+		if strings.HasPrefix(arg, "-") {
+			parts := strings.SplitN(arg, "=", 2)
 			if len(parts) == 2 {
 				flags[parts[0]] = parts[1]
 			} else {
