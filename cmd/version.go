@@ -29,7 +29,7 @@ import (
 
 const (
 	logo    = "       _ _ \n  __ _| (_)\n / _` | | |\n| (_| | | |\n \\__,_|_|_|"
-	version = "v1.0"
+	version = "v1.3.5"
 )
 
 // versionCmd represents the version command
