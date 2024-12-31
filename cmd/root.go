@@ -23,7 +23,6 @@ package cmd
 
 import (
 	"fmt"
-	"maps"
 	"os"
 	"path/filepath"
 	"strings"
@@ -80,8 +79,8 @@ func getAliases(
 	}
 
 	var res []string
-	for k := range maps.Keys(aliases) {
-		res = append(res, k)
+	for alias, command := range aliases {
+		res = append(res, fmt.Sprintf("%s%s%s\t%s", color, alias, resetColor, command))
 	}
 
 	return res, cobra.ShellCompDirectiveNoFileComp
