@@ -62,7 +62,7 @@ var (
 				i := 0
 
 				for alias, command := range aliases {
-					if search == "" || (search != "" && strings.Contains(alias, search)) {
+					if searchInAlias(search, alias, command.(string)) {
 						prefix := "├──"
 						if i == count {
 							prefix = "└──"
@@ -92,7 +92,7 @@ var (
 			fmt.Printf("+%s+%s+\n", strings.Repeat("-", 22), strings.Repeat("-", 42))
 
 			for alias, command := range aliases {
-				if search == "" || (search != "" && strings.Contains(alias, search)) {
+				if searchInAlias(search, alias, command.(string)) {
 					commandStr := command.(string)
 					fmt.Printf(
 						"| %s%-20s%s | %-40s |\n",
@@ -121,4 +121,8 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	listCmd.Flags().BoolVarP(&fullPrint, "full", "f", false, "use fast print")
+}
+
+func searchInAlias(search, alias, command string) bool {
+	return search == "" || (search != "" && strings.Contains(alias, search)) || (search != "" && strings.Contains(command, search))
 }
