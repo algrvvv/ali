@@ -37,7 +37,8 @@ import (
 const localConfig = ".ali"
 
 var (
-	debug bool
+	debug    bool
+	localEnv bool
 
 	// rootCmd represents the base command when called without any subcommands
 	rootCmd = &cobra.Command{
@@ -107,9 +108,18 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "D", false, "print debug messages")
+	rootCmd.PersistentFlags().BoolVarP(&localEnv, "local-env", "L", false, "use only local env")
 }
 
 func initConfig() {
+	if !localEnv {
+		initGlobalConfig()
+	}
+
+	initLocalConfig()
+}
+
+func initGlobalConfig() {
 	home, err := os.UserHomeDir()
 	utils.CheckError(err)
 
@@ -125,6 +135,27 @@ func initConfig() {
 	logger.SaveDebugf("using config: %s", viper.ConfigFileUsed())
 }
 
+func initLocalConfig() {
+	viper.SetConfigName(".ali")
+	viper.SetConfigType("toml")
+	viper.AddConfigPath(".")
+
+	if localEnv {
+		viper.AutomaticEnv()
+		if err := viper.ReadInConfig(); err != nil {
+			logger.SaveDebugf("load local config error: %v", err)
+			// utils.CheckError(err)
+		}
+		logger.SaveDebugf("using config: %s", viper.ConfigFileUsed())
+	} else {
+		if err := viper.MergeInConfig(); err != nil {
+			logger.SaveDebugf("local config not found")
+		} else {
+			logger.SaveDebugf("local config loaded")
+		}
+	}
+}
+
 func initLogger() {
 	home, err := os.UserHomeDir()
 	utils.CheckError(err)
@@ -132,17 +163,6 @@ func initLogger() {
 	path := filepath.Join(home, ".ali/ali.log")
 	err = logger.NewLogger(path, &logger.Options{Debug: true, MoreInfo: false, Stdout: debug})
 	utils.CheckError(err)
-}
-
-func initLocalConfig() {
-	viper.SetConfigName(".ali")
-	viper.AddConfigPath(".")
-
-	if err := viper.MergeInConfig(); err != nil {
-		logger.SaveDebugf("local config not found")
-	} else {
-		logger.SaveDebugf("local config loaded")
-	}
 }
 
 func parseUnknownFlags(args []string) map[string]string {
