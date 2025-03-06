@@ -31,14 +31,18 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/algrvvv/ali/logger"
+	"github.com/algrvvv/ali/parallel"
 	"github.com/algrvvv/ali/utils"
 )
 
 const localConfig = ".ali"
 
 var (
-	debug    bool
-	localEnv bool
+	debug         bool
+	localEnv      bool
+	doParallel    bool
+	withoutOutput bool
+	outputColor   string
 
 	// rootCmd represents the base command when called without any subcommands
 	rootCmd = &cobra.Command{
@@ -60,10 +64,14 @@ var (
 			logger.SaveDebugf("got params(%d): %v", len(params), params)
 			logger.SaveDebugf("got unknown flags: %v", unknownFlags)
 
-			command := utils.GetAlias(alias)
-			logger.SaveDebugf("got command: %s", command)
+			if doParallel {
+				parallel.DoParrallel(alias, outputColor, withoutOutput)
+			} else {
+				command := utils.GetAlias(alias)
+				logger.SaveDebugf("got command: %s", command)
 
-			utils.ExecuteAlias(command, params, unknownFlags)
+				utils.ExecuteAlias(command, params, unknownFlags)
+			}
 		},
 	}
 )
@@ -109,6 +117,9 @@ func init() {
 	// when this action is called directly.
 	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "D", false, "print debug messages")
 	rootCmd.PersistentFlags().BoolVarP(&localEnv, "local-env", "L", false, "use only local env")
+	rootCmd.PersistentFlags().BoolVarP(&doParallel, "parallel", "p", false, "do parallel command")
+	rootCmd.PersistentFlags().BoolVar(&withoutOutput, "without-output", false, "dont show parallel commands output")
+	rootCmd.PersistentFlags().StringVar(&outputColor, "output-color", "gray", "color of the ouput of the parallel command")
 }
 
 func initConfig() {
