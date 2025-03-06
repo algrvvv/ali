@@ -23,6 +23,7 @@ source ~/tmp/ali
 ```
 
 ### Usage
+
 The application has a global configuration and any number of local configurations.
 To do this, go to the desired directory and use the command: `ali init`.
 All local overlapping aliases have an advantage over global ones.
@@ -59,7 +60,8 @@ To edit the global configuration, use: `ali edit`
 To edit the local configuration, use: `ali edit --local`
 By default, `vi` opens to edit the configuration.
 
-Example: 
+Example:
+
 ```toml
 [aliases]
 # test alias
@@ -68,6 +70,7 @@ test = 'echo "hello world"'
 [app]
 editor = 'vim'
 ```
+
 ### Usage examples
 
 Pass arguments inside a command:
@@ -83,6 +86,7 @@ ali hello --user=$(whoami)
 ```
 
 passing arguments after the command:
+
 ```toml
 # in configuration
 gl = 'git log -n '
@@ -93,10 +97,56 @@ ali gl 3
 # equal: git log -n 3
 ```
 
+### Multiple commands
+
+Multiple commands are commands that will be executed in parallel in a single
+terminal session.
+
+Configuration example:
+
+```toml
+[[parallel.lara]]
+# name of command
+label='Laravel'
+# color of the label in logs
+color='red'
+# command for execute
+command='php artisan serve'
+# work directory
+path='.'
+
+[[parallel.lara]]
+label='Vue'
+color='green'
+command='npm run dev'
+path='.'
+```
+
+To run parallel commands, use `ali CommandName -p` or `ali commandName --parallel`
+
+There are also additional settings for parallel commands.
+For example, the `--without-output` flag to disable command output.
+It is also possible to change the output color by using flag `--output-color`.
+
+Available colors:
+
+- red
+- green
+- yellow
+- blue
+- magenta
+- cyan
+- gray
+- orange
+- pink
+- lime
+- white
+
+At the moment, these commands will only be displayed in the list using the`-f` flag.
+
 ### Additionally
 
 To get logs, use `--debug` or `-D`
 
 To use only local aliases, use `-L` or `--local-env`.
 This can be useful when using `ali list -L` to output only a list of local aliases.
-
