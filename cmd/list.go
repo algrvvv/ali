@@ -23,11 +23,14 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/algrvvv/ali/logger"
+	"github.com/algrvvv/ali/parallel"
 	"github.com/algrvvv/ali/utils"
 )
 
@@ -56,13 +59,30 @@ var (
 				return
 			}
 
+			parallelKeys := viper.GetStringMap(parallel.ParallelPrefix)
+			parallelCommands := make(map[string][]parallel.Command)
+			for k := range parallelKeys {
+				var command []parallel.Command
+
+				err := viper.UnmarshalKey(fmt.Sprintf("%s.%s", parallel.ParallelPrefix, k), &command)
+				if err != nil {
+					logger.SaveDebugf("failed to unmarshal parallel command: %s", err)
+					fmt.Println("failed to get parallel commands")
+					os.Exit(1)
+				}
+
+				parallelCommands[k] = command
+			}
+
 			fmt.Println("Available Aliases:")
 			if fullPrint {
-				count := len(aliases) - 1
+				count := (len(aliases)) + (len(parallelCommands))
 				i := 0
 
 				for alias, command := range aliases {
 					if searchInAlias(search, alias, command.(string)) {
+						i++
+
 						prefix := "├──"
 						if i == count {
 							prefix = "└──"
@@ -76,7 +96,47 @@ var (
 							resetColor,
 							command,
 						)
+					}
+				}
+
+				for alias, commands := range parallelCommands {
+					if searchInAlias(search, alias, "parallel") {
 						i++
+						prefix := "├──"
+						if i == count {
+							prefix = "└──"
+						}
+
+						fmt.Printf(
+							"  %s %s%-6s%s -> %s\n",
+							prefix,
+							utils.Colors["cyan"],
+							alias,
+							resetColor,
+							alias+" parallel command",
+						)
+
+						for j, cmd := range commands {
+							subPrefix := "  "
+							if i < count {
+								subPrefix += "│"
+							}
+
+							if j == len(commands)-1 {
+								subPrefix += "\t└──"
+							} else {
+								subPrefix += "  \t├──"
+							}
+
+							fmt.Printf(
+								"%s %s%-6s%s -> %s\n",
+								subPrefix,
+								utils.Colors["magenta"],
+								cmd.Label,
+								resetColor,
+								cmd.Command,
+							)
+						}
 					}
 				}
 
