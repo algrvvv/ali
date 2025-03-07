@@ -119,7 +119,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&localEnv, "local-env", "L", false, "use only local env")
 	rootCmd.PersistentFlags().BoolVarP(&doParallel, "parallel", "p", false, "do parallel command")
 	rootCmd.PersistentFlags().BoolVar(&withoutOutput, "without-output", false, "dont show parallel commands output")
-	rootCmd.PersistentFlags().StringVar(&outputColor, "output-color", "gray", "color of the ouput of the parallel command")
+	rootCmd.PersistentFlags().StringVar(&outputColor, "output-color", "", "color of the ouput of the parallel command")
 }
 
 func initConfig() {

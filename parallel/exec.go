@@ -3,6 +3,7 @@ package parallel
 import (
 	"bufio"
 	"fmt"
+	"os"
 	"os/exec"
 	"runtime"
 	"sync"
@@ -14,6 +15,7 @@ func Exec(command Command, outputColor string, withoutOutput bool, wg *sync.Wait
 	defer wg.Done()
 
 	commandLabel := utils.Colorize(command.Label, command.Color)
+	label := utils.Colorize(fmt.Sprintf("[%s]", command.Label), command.Color)
 	fmt.Printf("Running command: %s\n", commandLabel)
 
 	var cmd *exec.Cmd
@@ -21,6 +23,11 @@ func Exec(command Command, outputColor string, withoutOutput bool, wg *sync.Wait
 		cmd = exec.Command("cmd", "/C", fmt.Sprintf("cd %s && %s", command.Path, command.Command))
 	} else {
 		cmd = exec.Command("sh", "-c", fmt.Sprintf("cd %s && %s", command.Path, command.Command))
+	}
+
+	// елси нет четко задонного цвета логов, пытаемся сохранить исходный.
+	if outputColor == "" {
+		cmd.Env = append(os.Environ(), "FORCE_COLOR=1")
 	}
 
 	stdout, _ := cmd.StdoutPipe()
@@ -37,10 +44,19 @@ func Exec(command Command, outputColor string, withoutOutput bool, wg *sync.Wait
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
+		defer func() {
+			fmt.Printf("%s %s exited.\n", label, command.Command)
+		}()
 		for stdoutScanner.Scan() {
-			output := utils.Colorize(stdoutScanner.Text(), outputColor)
+			var output string
+			if outputColor != "" {
+				output = utils.Colorize(stdoutScanner.Text(), outputColor)
+			} else {
+				output = stdoutScanner.Text()
+			}
+
 			if !withoutOutput {
-				fmt.Printf("[%s] %s\n", commandLabel, output)
+				fmt.Printf("%s %s\n", label, output)
 			}
 		}
 	}()
@@ -50,7 +66,7 @@ func Exec(command Command, outputColor string, withoutOutput bool, wg *sync.Wait
 		defer wg.Done()
 		for stderrScanner.Scan() {
 			if !withoutOutput {
-				fmt.Printf("[%s] %s\n", commandLabel, stderrScanner.Text())
+				fmt.Printf("%s %s\n", utils.Colorize(fmt.Sprintf("[%s]", command.Label), command.Color), stderrScanner.Text())
 			}
 		}
 	}()
