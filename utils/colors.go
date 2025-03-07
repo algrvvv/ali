@@ -3,10 +3,10 @@ package utils
 import "fmt"
 
 var Colors = map[string]string{
-	"red":     "\033[31m",
+	"red":     "\033[38;5;210m",
 	"green":   "\033[32m",
-	"yellow":  "\033[33m",
-	"blue":    "\033[34m",
+	"yellow":  "\033[38;5;221m",
+	"blue":    "\033[38;5;110m",
 	"magenta": "\033[35m",
 	"cyan":    "\033[36m",
 	"gray":    "\033[90m",
