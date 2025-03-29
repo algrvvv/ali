@@ -53,6 +53,7 @@ var setupCmd = &cobra.Command{
 		viper.SetConfigFile(configPath)
 		viper.Set("aliases.test", "echo \"hello world\"")
 		viper.Set("app.editor", "vi")
+		viper.Set("app.default_config_type", utils.TomlConfigurationType)
 
 		err = viper.WriteConfig()
 		utils.CheckError(err)
