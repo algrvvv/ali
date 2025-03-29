@@ -131,7 +131,7 @@ var (
 							fmt.Printf(
 								"%s %s%-6s%s -> %s\n",
 								subPrefix,
-								utils.Colors["magenta"],
+								utils.Colors[cmd.Color],
 								cmd.Label,
 								resetColor,
 								cmd.Command,
