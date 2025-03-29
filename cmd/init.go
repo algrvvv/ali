@@ -26,41 +26,63 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	"github.com/algrvvv/ali/logger"
 	"github.com/algrvvv/ali/utils"
 )
 
 // initCmd represents the init command
-var initCmd = &cobra.Command{
-	Use:   "init",
-	Short: "Init new local config",
-	Run: func(cmd *cobra.Command, args []string) {
-		dir, err := os.Getwd()
-		utils.CheckError(err)
-		logger.SaveDebugf("got dir: %s", dir)
+var (
+	configFormat string
+	initCmd      = &cobra.Command{
+		Use:   "init",
+		Short: "Init new local config",
+		Run: func(cmd *cobra.Command, args []string) {
+			logger.SaveDebugf("save new local config with format as: %s", configFormat)
 
-		f, err := os.OpenFile(localConfig, os.O_CREATE|os.O_RDWR, 0o600)
-		utils.CheckError(err)
-		fmt.Println("local config file initialized")
+			dir, err := os.Getwd()
+			utils.CheckError(err)
+			logger.SaveDebugf("got dir: %s", dir)
 
-		_, err = f.WriteString("[aliases]\n")
-		utils.CheckError(err)
-		utils.CheckError(f.Close())
+			if utils.FileExists(localConfig) {
+				fmt.Println("local config already exists")
+				return
+			}
 
-		// files, err := os.ReadDir(dir)
-		// utils.CheckError(err)
-		// for _, f := range files {
-		// 	if f.Name() == localConfig {
-		// 		logger.SaveDebugf("local config file founded")
-		// 		fmt.Println(f.Name())
-		// 		return
-		// 	}
-		// }
-		//
-		// fmt.Println("local config file not found")
-	},
-}
+			f, err := os.OpenFile(localConfig, os.O_CREATE|os.O_RDWR, 0o600)
+			utils.CheckError(err)
+			fmt.Println("local config file initialized")
+
+			switch configFormat {
+			case utils.YamlConfigurationType:
+				_, err = f.WriteString("aliases:\n")
+			case utils.JsonConfigurationType:
+				_, err = f.WriteString("{\n\t\"aliases\": {}\n}")
+			case utils.TomlConfigurationType:
+				_, err = f.WriteString("[aliases]\n")
+			default:
+				fmt.Println(utils.ErrUnsupportedConfigType)
+				return
+			}
+
+			utils.CheckError(err)
+			utils.CheckError(f.Close())
+
+			// files, err := os.ReadDir(dir)
+			// utils.CheckError(err)
+			// for _, f := range files {
+			// 	if f.Name() == localConfig {
+			// 		logger.SaveDebugf("local config file founded")
+			// 		fmt.Println(f.Name())
+			// 		return
+			// 	}
+			// }
+			//
+			// fmt.Println("local config file not found")
+		},
+	}
+)
 
 func init() {
 	rootCmd.AddCommand(initCmd)
@@ -73,5 +95,11 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// initCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	defaultConfigType := viper.GetString("app.default_config_type")
+	if defaultConfigType == "" {
+		defaultConfigType = utils.YamlConfigurationType
+	}
+
+	initCmd.Flags().StringVarP(&configFormat, "format", "F", defaultConfigType, "new local config type")
 }
