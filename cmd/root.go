@@ -147,8 +147,16 @@ func initGlobalConfig() {
 }
 
 func initLocalConfig() {
+	dir, err := os.Getwd()
+	utils.CheckError(err)
+	path := filepath.Join(dir, localConfig)
+
+	confType, err := utils.GetConfigurationType(path)
+	utils.CheckError(err)
+	logger.SaveDebugf("read local config as %s", confType)
+
 	viper.SetConfigName(".ali")
-	viper.SetConfigType("toml")
+	viper.SetConfigType(confType)
 	viper.AddConfigPath(".")
 
 	if localEnv {
