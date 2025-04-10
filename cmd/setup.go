@@ -41,7 +41,7 @@ var setupCmd = &cobra.Command{
 		home, err := os.UserHomeDir()
 		utils.CheckError(err)
 		configDir := filepath.Join(home, ".ali")
-		err = os.Mkdir(configDir, 0o700)
+		err = os.MkdirAll(configDir, 0o700)
 		if err != nil && !errors.Is(err, os.ErrExist) {
 			utils.CheckError(err)
 		}

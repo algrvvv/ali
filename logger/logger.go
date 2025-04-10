@@ -238,7 +238,7 @@ func SaveDebugf(message string, args ...any) {
 	if inited {
 		Debugf(message, args...)
 	} else {
-		format := fmt.Sprintf(message, args...)
-		fmt.Printf("[debug] %s\n", format)
+		// format := fmt.Sprintf(message, args...)
+		// fmt.Printf("[debug] %s\n", format)
 	}
 }
