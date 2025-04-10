@@ -34,32 +34,35 @@ import (
 )
 
 // setupCmd represents the setup command
-var setupCmd = &cobra.Command{
-	Use:   "setup",
-	Short: "Setup global config",
-	Run: func(_ *cobra.Command, args []string) {
-		home, err := os.UserHomeDir()
-		utils.CheckError(err)
-		configDir := filepath.Join(home, ".ali")
-		err = os.MkdirAll(configDir, 0o700)
-		if err != nil && !errors.Is(err, os.ErrExist) {
+var (
+	defaultEditor string
+	setupCmd      = &cobra.Command{
+		Use:   "setup",
+		Short: "Setup global config",
+		Run: func(_ *cobra.Command, args []string) {
+			home, err := os.UserHomeDir()
 			utils.CheckError(err)
-		}
-		logger.SaveDebugf("got config dir: %s", configDir)
+			configDir := filepath.Join(home, ".ali")
+			err = os.MkdirAll(configDir, 0o777)
+			if err != nil && !errors.Is(err, os.ErrExist) {
+				utils.CheckError(err)
+			}
+			logger.SaveDebugf("got config dir: %s", configDir)
 
-		configPath := filepath.Join(configDir, "config.toml")
-		logger.SaveDebugf("got config path: %s", configPath)
+			configPath := filepath.Join(configDir, "config.toml")
+			logger.SaveDebugf("got config path: %s", configPath)
 
-		viper.SetConfigFile(configPath)
-		viper.Set("aliases.test", "echo \"hello world\"")
-		viper.Set("app.editor", "vi")
-		viper.Set("app.default_config_type", utils.TomlConfigurationType)
+			viper.SetConfigFile(configPath)
+			viper.Set("aliases.test", "echo \"hello world\"")
+			viper.Set("app.editor", defaultEditor)
+			// viper.Set("app.default_config_type", utils.TomlConfigurationType)
 
-		err = viper.WriteConfig()
-		utils.CheckError(err)
-		logger.SaveDebugf("config writed")
-	},
-}
+			err = viper.WriteConfig()
+			utils.CheckError(err)
+			logger.SaveDebugf("config writed")
+		},
+	}
+)
 
 func init() {
 	rootCmd.AddCommand(setupCmd)
@@ -72,5 +75,5 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// setupCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	setupCmd.Flags().StringVarP(&defaultEditor, "editor", "e", "vi", "use as configuration editor")
 }
