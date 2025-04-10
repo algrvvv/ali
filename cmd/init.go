@@ -26,7 +26,6 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	"github.com/algrvvv/ali/logger"
 	"github.com/algrvvv/ali/utils"
@@ -96,10 +95,5 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 
-	defaultConfigType := viper.GetString("app.default_config_type")
-	if defaultConfigType == "" {
-		defaultConfigType = utils.YamlConfigurationType
-	}
-
-	initCmd.Flags().StringVarP(&configFormat, "format", "F", defaultConfigType, "new local config type")
+	initCmd.Flags().StringVarP(&configFormat, "format", "F", utils.TomlConfigurationType, "new local config type")
 }
