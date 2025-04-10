@@ -22,6 +22,7 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -36,6 +37,20 @@ import (
 )
 
 const localConfig = ".ali"
+
+func init() {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		fmt.Println("failed to get home dir: ", err)
+		os.Exit(1)
+	}
+
+	path := filepath.Join(home, ".ali")
+	if err := os.Mkdir(path, 0777); err != nil && !errors.Is(err, os.ErrExist) {
+		fmt.Println("failed to create global ali dir: ", err)
+		os.Exit(1)
+	}
+}
 
 var (
 	debug         bool
@@ -105,7 +120,7 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig, initLogger, initLocalConfig)
+	cobra.OnInitialize(initLogger, initConfig, initLocalConfig)
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
@@ -131,6 +146,17 @@ func initConfig() {
 }
 
 func initGlobalConfig() {
+	cmd, _, err := rootCmd.Find(os.Args[1:])
+	if err != nil {
+		fmt.Println("error occurred: ", err)
+		os.Exit(1)
+	}
+
+	// пропускаем если setup скип
+	if cmd.Name() == "setup" || cmd.Name() == "version" {
+		return
+	}
+
 	home, err := os.UserHomeDir()
 	utils.CheckError(err)
 
@@ -152,7 +178,10 @@ func initLocalConfig() {
 	path := filepath.Join(dir, localConfig)
 
 	confType, err := utils.GetConfigurationType(path)
-	utils.CheckError(err)
+	if err != nil && !errors.Is(err, os.ErrNotExist) {
+		logger.SaveDebugf("failed to get configuration type: %v", err)
+	}
+
 	logger.SaveDebugf("read local config as %s", confType)
 
 	viper.SetConfigName(".ali")
