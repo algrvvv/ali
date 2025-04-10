@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"runtime/debug"
 	"strings"
+	"sync"
 
 	"github.com/lmittmann/tint"
 	"github.com/mdobak/go-xerrors"
@@ -176,6 +177,9 @@ func NewLogger(logfile string, opts *Options) error {
 	}
 
 	inited = true
+
+	LogDefferedMessage()
+
 	return nil
 }
 
@@ -234,11 +238,33 @@ func Fatalf(message string, args ...any) {
 	os.Exit(1)
 }
 
+var (
+	waitToInitLogger   = make(chan struct{})
+	defferedMessages   []string
+	defferedMessagesMu = sync.Mutex{}
+)
+
+func storeDefferedMessage(log string) {
+	defferedMessagesMu.Lock()
+	defer defferedMessagesMu.Unlock()
+
+	defferedMessages = append(defferedMessages, log)
+}
+
+func LogDefferedMessage() {
+	defferedMessagesMu.Lock()
+	defer defferedMessagesMu.Unlock()
+
+	for _, msg := range defferedMessages {
+		Debugf("[defer] %s", msg)
+	}
+}
+
 func SaveDebugf(message string, args ...any) {
 	if inited {
 		Debugf(message, args...)
 	} else {
-		// format := fmt.Sprintf(message, args...)
-		// fmt.Printf("[debug] %s\n", format)
+		format := fmt.Sprintf(message, args...)
+		storeDefferedMessage(format)
 	}
 }
