@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"runtime"
 	"strings"
 
 	"github.com/algrvvv/ali/logger"
@@ -39,7 +40,19 @@ func ExecuteAlias(command string, args []string, flags map[string]string) {
 		return
 	}
 
-	cmd := exec.Command("sh", "-c", cmdArgs)
+	var cmd *exec.Cmd
+
+	switch runtime.GOOS {
+	case "windows":
+		cmd = exec.Command("cmd.exe", "/C", cmdArgs)
+	case "linux", "darwin":
+		cmd = exec.Command("sh", "-c", cmdArgs)
+	default:
+		logger.SaveDebugf("Unsupported OS")
+		return
+	}
+
+	// cmd := exec.Command("sh", "-c", cmdArgs)
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
