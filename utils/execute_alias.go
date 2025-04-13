@@ -40,24 +40,36 @@ func ExecuteAlias(command string, args []string, flags map[string]string) {
 		return
 	}
 
-	var cmd *exec.Cmd
+	resultCmd := cmdArgs
+	vars, err := GetVars()
+	if err != nil {
+		logger.SaveDebugf("failed to get all vars: %v", err)
+		fmt.Println("failed to get vars. skip")
+	} else {
+		logger.SaveDebugf("got vars: %v", vars)
+		resultCmd = GetVariables(cmdArgs, vars)
+	}
 
+	logger.SaveDebugf("result command to execute: %s", resultCmd)
+
+	var cmd *exec.Cmd
 	switch runtime.GOOS {
 	case "windows":
-		cmd = exec.Command("cmd.exe", "/C", cmdArgs)
+		cmd = exec.Command("cmd.exe", "/C", resultCmd)
 	case "linux", "darwin":
-		cmd = exec.Command("sh", "-c", cmdArgs)
+		cmd = exec.Command("sh", "-c", resultCmd)
 	default:
+		fmt.Println("Unsupported OS")
 		logger.SaveDebugf("Unsupported OS")
 		return
 	}
 
-	// cmd := exec.Command("sh", "-c", cmdArgs)
+	// cmd := exec.Command("sh", "-c", resultCmd)
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 
-	err := cmd.Start()
+	err = cmd.Start()
 	CheckError(err)
 
 	err = cmd.Wait()

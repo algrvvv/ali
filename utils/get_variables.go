@@ -11,7 +11,7 @@ type varConfig struct {
 	Vars map[string]string `mapstructure:"vars"`
 }
 
-func getVars() (map[string]string, error) {
+func GetVars() (map[string]string, error) {
 	var vars varConfig
 
 	err := viper.Unmarshal(&vars)
