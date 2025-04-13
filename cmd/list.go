@@ -41,7 +41,8 @@ const (
 
 // listCmd represents the list command
 var (
-	fullPrint bool
+	fullPrint      bool
+	printVariables bool
 
 	listCmd = &cobra.Command{
 		Use:     "list",
@@ -57,6 +58,11 @@ var (
 			if !ok {
 				fmt.Println("failed to get all aliases")
 				return
+			}
+
+			if printVariables {
+				aliases = viper.GetStringMap("vars")
+				logger.SaveDebugf("print variables")
 			}
 
 			parallelKeys := viper.GetStringMap(parallel.ParallelPrefix)
@@ -97,6 +103,10 @@ var (
 							command,
 						)
 					}
+				}
+
+				if printVariables {
+					return
 				}
 
 				for alias, commands := range parallelCommands {
@@ -180,7 +190,8 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	listCmd.Flags().BoolVarP(&fullPrint, "full", "f", false, "use fast print")
+	listCmd.Flags().BoolVarP(&fullPrint, "full", "f", false, "use full print")
+	listCmd.Flags().BoolVarP(&printVariables, "vars", "v", false, "print variables")
 }
 
 func searchInAlias(search, alias, command string) bool {
