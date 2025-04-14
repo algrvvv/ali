@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"sync"
 
+	"github.com/algrvvv/ali/logger"
 	"github.com/algrvvv/ali/utils"
 )
 
@@ -16,7 +17,18 @@ func Exec(command Command, outputColor string, withoutOutput bool, wg *sync.Wait
 
 	commandLabel := utils.Colorize(command.Label, command.Color)
 	label := utils.Colorize(fmt.Sprintf("[%s]", command.Label), command.Color)
+
+	vars, err := utils.GetVars()
+	if err != nil {
+		logger.SaveDebugf("failed to get all vars: %v", err)
+		fmt.Println("failed to get vars. skip")
+	} else {
+		logger.SaveDebugf("got vars: %v", vars)
+		command.Command = utils.GetVariables(command.Command, vars)
+	}
+
 	fmt.Printf("Running command: %s\n", commandLabel)
+	logger.SaveDebugf("result command: %s", command.Command)
 
 	var cmd *exec.Cmd
 	if runtime.GOOS == "windows" {
