@@ -48,7 +48,12 @@ func ExecuteAlias(command string, args []string, flags map[string]string, print 
 		if strings.Contains(command, k) {
 			command = strings.ReplaceAll(command, k, value)
 		} else {
-			command += " " + key
+			// NOTE: фикс прокидывания переменных
+			if value == "" {
+				command += " " + key
+			} else {
+				command += " " + fmt.Sprintf("%s=%s", key, value)
+			}
 		}
 	}
 

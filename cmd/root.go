@@ -155,7 +155,7 @@ func initGlobalConfig() {
 	}
 
 	// пропускаем если setup скип
-	if cmd.Name() == "setup" || cmd.Name() == "version" {
+	if cmd.Name() == "setup" || cmd.Name() == "version" || cmd.Name() == "help" {
 		return
 	}
 
