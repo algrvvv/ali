@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func ExecuteAlias(command string, args []string, flags map[string]string) {
+func ExecuteAlias(command string, args []string, flags map[string]string, print bool) {
 	// проверяем аргументы, чтобы при пробелах в них мы не получили их как разные аргументы
 	for i := range args {
 		if strings.Contains(args[i], " ") {
@@ -25,6 +25,12 @@ func ExecuteAlias(command string, args []string, flags map[string]string) {
 
 	for key, value := range flags {
 		logger.SaveDebugf("got key: %s", key)
+
+		preparedKey := strings.TrimLeft(key, "-")
+		if print && preparedKey == "print" {
+			logger.SaveDebugf("user want to print result")
+			continue
+		}
 
 		if strings.Contains(key, "V_") {
 			varToChange := strings.Replace(key, "V_", "", 1)
@@ -65,20 +71,23 @@ func ExecuteAlias(command string, args []string, flags map[string]string) {
 	}
 
 	logger.SaveDebugf("result command to execute: %s", resultCmd)
+	if print {
+		fmt.Println("command: ", resultCmd)
+	}
 
 	var cmd *exec.Cmd
+
 	switch runtime.GOOS {
 	case "windows":
-		cmd = exec.Command("cmd.exe", "/C", resultCmd)
+		cmd = exec.Command("cmd.exe", "/C", cmdArgs)
 	case "linux", "darwin":
-		cmd = exec.Command("sh", "-c", resultCmd)
+		cmd = exec.Command("sh", "-c", cmdArgs)
 	default:
-		fmt.Println("Unsupported OS")
 		logger.SaveDebugf("Unsupported OS")
 		return
 	}
 
-	// cmd := exec.Command("sh", "-c", resultCmd)
+	// cmd := exec.Command("sh", "-c", cmdArgs)
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout

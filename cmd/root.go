@@ -53,11 +53,12 @@ func init() {
 }
 
 var (
-	debug         bool
-	localEnv      bool
-	doParallel    bool
-	withoutOutput bool
-	outputColor   string
+	debug              bool
+	localEnv           bool
+	doParallel         bool
+	withoutOutput      bool
+	outputColor        string
+	printResultCommand bool
 
 	// rootCmd represents the base command when called without any subcommands
 	rootCmd = &cobra.Command{
@@ -85,7 +86,7 @@ var (
 				command := utils.GetAlias(alias)
 				logger.SaveDebugf("got command: %s", command)
 
-				utils.ExecuteAlias(command, params, unknownFlags)
+				utils.ExecuteAlias(command, params, unknownFlags, printResultCommand)
 			}
 		},
 	}
@@ -135,6 +136,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&doParallel, "parallel", "p", false, "do parallel command")
 	rootCmd.PersistentFlags().BoolVar(&withoutOutput, "without-output", false, "dont show parallel commands output")
 	rootCmd.PersistentFlags().StringVar(&outputColor, "output-color", "", "color of the ouput of the parallel command")
+	rootCmd.Flags().BoolVar(&printResultCommand, "print", false, "print result command before start exec")
 }
 
 func initConfig() {
