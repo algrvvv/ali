@@ -84,9 +84,9 @@ func ExecuteAlias(command string, args []string, flags map[string]string, print 
 
 	switch runtime.GOOS {
 	case "windows":
-		cmd = exec.Command("cmd.exe", "/C", cmdArgs)
+		cmd = exec.Command("cmd.exe", "/C", resultCmd)
 	case "linux", "darwin":
-		cmd = exec.Command("sh", "-c", cmdArgs)
+		cmd = exec.Command("sh", "-c", resultCmd)
 	default:
 		logger.SaveDebugf("Unsupported OS")
 		return
