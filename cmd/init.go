@@ -33,8 +33,8 @@ import (
 
 // initCmd represents the init command
 var (
-	configFormat string
-	initCmd      = &cobra.Command{
+	configFormat string = utils.YamlConfigurationType
+	initCmd             = &cobra.Command{
 		Use:   "init",
 		Short: "Init new local config",
 		Run: func(cmd *cobra.Command, args []string) {
@@ -51,6 +51,8 @@ var (
 
 			f, err := os.OpenFile(localConfig, os.O_CREATE|os.O_RDWR, 0o600)
 			utils.CheckError(err)
+
+			defer f.Close()
 			fmt.Println("local config file initialized")
 
 			switch configFormat {
@@ -95,5 +97,6 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 
-	initCmd.Flags().StringVarP(&configFormat, "format", "F", utils.TomlConfigurationType, "new local config type")
+	// NOTE: больше не поддерживается
+	// initCmd.Flags().StringVarP(&configFormat, "format", "F", utils.YamlConfigurationType, "new local config type")
 }

@@ -49,7 +49,7 @@ var (
 			}
 			logger.SaveDebugf("got config dir: %s", configDir)
 
-			configPath := filepath.Join(configDir, "config.toml")
+			configPath := filepath.Join(configDir, "config.yml")
 			logger.SaveDebugf("got config path: %s", configPath)
 
 			viper.SetConfigFile(configPath)

@@ -58,7 +58,7 @@ var (
 
 				path = filepath.Join(dir, ".ali")
 			} else {
-				path = filepath.Join(home, ".ali/config.toml")
+				path = filepath.Join(home, ".ali/config.yml")
 			}
 			logger.SaveDebugf("got path for edit config: %s", path)
 

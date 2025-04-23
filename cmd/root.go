@@ -121,7 +121,7 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initLogger, initConfig, initLocalConfig)
+	cobra.OnInitialize(initLogger, initConfig)
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
@@ -137,6 +137,9 @@ func init() {
 	rootCmd.PersistentFlags().BoolVar(&withoutOutput, "without-output", false, "dont show parallel commands output")
 	rootCmd.PersistentFlags().StringVar(&outputColor, "output-color", "", "color of the ouput of the parallel command")
 	rootCmd.Flags().BoolVar(&printResultCommand, "print", false, "print result command before start exec")
+
+	// WARN: only for dev
+	// rootCmd.PersistentFlags().StringVar(&localConfig, "local-config", ".ali", "local config path")
 }
 
 func initConfig() {
@@ -164,7 +167,7 @@ func initGlobalConfig() {
 
 	path := filepath.Join(home, ".ali")
 	viper.AddConfigPath(path)
-	viper.SetConfigType("toml")
+	viper.SetConfigType(utils.YamlConfigurationType)
 	viper.SetConfigName("config")
 
 	viper.AutomaticEnv()

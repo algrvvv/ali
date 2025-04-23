@@ -19,7 +19,8 @@ const (
 
 var ErrUnsupportedConfigType = errors.New("unsupported config type")
 
-// GetConfigurationType функция для определения типа конфигурации
+// GetConfigurationType функция для определения типа конфигурации.
+// Deprecated: функция больше не используется
 func GetConfigurationType(path string) (string, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
