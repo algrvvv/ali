@@ -26,11 +26,13 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/algrvvv/ali/local"
 	"github.com/algrvvv/ali/logger"
 	"github.com/algrvvv/ali/parallel"
 	"github.com/algrvvv/ali/utils"
@@ -53,6 +55,8 @@ func init() {
 }
 
 var (
+	localViper *viper.Viper
+
 	debug              bool
 	localEnv           bool
 	doParallel         bool
@@ -80,13 +84,39 @@ var (
 			logger.SaveDebugf("got params(%d): %v", len(params), params)
 			logger.SaveDebugf("got unknown flags: %v", unknownFlags)
 
-			if doParallel {
-				parallel.DoParrallel(alias, outputColor, withoutOutput)
-			} else {
-				command := utils.GetAlias(alias)
-				logger.SaveDebugf("got command: %s", command)
+			aliases := utils.LoadAliases(viper.GetViper())
+			aliasEntry := utils.SearchSynonyms(aliases, alias)
+			logger.SaveDebugf("got alias entry: %v", aliasEntry)
 
-				utils.ExecuteAlias(command, params, unknownFlags, printResultCommand)
+			if aliasEntry == nil {
+				fmt.Println("alias not found")
+				return
+			}
+
+			envs := utils.GetEnvs(aliasEntry)
+
+			if aliasEntry.Parallel {
+				parallel.ExecuteParallel(
+					aliasEntry,
+					params,
+					unknownFlags,
+					envs,
+					printResultCommand,
+				)
+			} else {
+				for _, command := range aliasEntry.Cmds {
+					err := local.ExecuteLocal(
+						command,
+						params,
+						unknownFlags,
+						envs,
+						printResultCommand,
+					)
+					if err != nil {
+						fmt.Println("failed to get cmd: ", err)
+						return
+					}
+				}
 			}
 		},
 	}
@@ -178,20 +208,23 @@ func initGlobalConfig() {
 }
 
 func initLocalConfig() {
-	dir, err := os.Getwd()
-	utils.CheckError(err)
-	path := filepath.Join(dir, localConfig)
+	logger.SaveDebugf("local config: %s", localConfig)
 
-	confType, err := utils.GetConfigurationType(path)
-	if err != nil && !errors.Is(err, os.ErrNotExist) {
-		logger.SaveDebugf("failed to get configuration type: %v", err)
-	}
+	localViper = viper.New()
+	localViper.SetConfigName(localConfig)
+	localViper.SetConfigType(utils.YamlConfigurationType)
+	localViper.AddConfigPath(".")
 
-	logger.SaveDebugf("read local config as %s", confType)
-
-	viper.SetConfigName(".ali")
-	viper.SetConfigType(confType)
+	viper.SetConfigName(localConfig)
+	viper.SetConfigType(utils.YamlConfigurationType)
 	viper.AddConfigPath(".")
+
+	if err := localViper.ReadInConfig(); err != nil {
+		logger.SaveDebugf("load local config error: %v", err)
+		// utils.CheckError(err)
+	} else {
+		logger.SaveDebugf("local viper read config successfully")
+	}
 
 	if localEnv {
 		viper.AutomaticEnv()
@@ -219,11 +252,27 @@ func initLogger() {
 }
 
 func parseUnknownFlags(args []string) map[string]string {
+	reservedFlags := []string{
+		"-D", "-debug", "--debug",
+		"-print", "-print",
+		"-L", "--local-config",
+		"-local-config",
+	}
+
 	flags := make(map[string]string)
 	for _, arg := range args {
 		// NOTE: пропускаем зарезервированный ключ
 		// TODO: придумать как избежать этого, если вдруг нужно будет использовать такой ключ
-		if arg == "-D" || arg == "--debug" {
+		if strings.Contains(arg, "=") {
+			prepArg := strings.SplitN(arg, "=", 2)[0]
+			if slices.Contains(reservedFlags, prepArg) {
+				logger.SaveDebugf("got reserved flag: %s; skip", arg)
+				continue
+			}
+		}
+
+		if slices.Contains(reservedFlags, arg) {
+			logger.SaveDebugf("got reserved flag: %s; skip", arg)
 			continue
 		}
 
