@@ -5,6 +5,7 @@ go 1.23.3
 require (
 	github.com/lmittmann/tint v1.0.5
 	github.com/mdobak/go-xerrors v0.3.1
+	github.com/mitchellh/mapstructure v1.5.0
 	github.com/pelletier/go-toml/v2 v2.2.2
 	github.com/samber/slog-multi v1.2.4
 	github.com/spf13/cobra v1.8.1
@@ -17,7 +18,6 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
-	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/samber/lo v1.47.0 // indirect
