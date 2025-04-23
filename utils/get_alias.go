@@ -2,8 +2,8 @@ package utils
 
 import "github.com/spf13/viper"
 
-func GetAlias(aliasName string) string {
+func GetAlias(aliasName string) any {
 	key := "aliases." + aliasName
 
-	return viper.GetString(key)
+	return viper.Get(key)
 }
