@@ -49,6 +49,13 @@ var (
 			}
 			logger.SaveDebugf("got config dir: %s", configDir)
 
+			templatesDirPath := filepath.Join(configDir, utils.TemplateDirName)
+			err = os.MkdirAll(templatesDirPath, 0777)
+			if err != nil {
+				utils.CheckError(err)
+			}
+			logger.SaveDebugf("failed to create templates dir")
+
 			configPath := filepath.Join(configDir, "config.yml")
 			logger.SaveDebugf("got config path: %s", configPath)
 
