@@ -36,6 +36,7 @@ func ExecuteParallel(
 
 			cmd, err := utils.PrepareCommand(
 				command,
+				entry.Dir,
 				params,
 				flags,
 				envs,

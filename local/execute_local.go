@@ -7,12 +7,14 @@ import (
 )
 
 func ExecuteLocal(
-	command string, params []string,
+	command string, dir string,
+	params []string,
 	flags map[string]string, envs map[string]any,
 	printResultCommands bool,
 ) error {
 	cmd, err := utils.PrepareCommand(
 		command,
+		dir,
 		params,
 		flags,
 		envs,

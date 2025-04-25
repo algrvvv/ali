@@ -107,6 +107,7 @@ var (
 				for _, command := range aliasEntry.Cmds {
 					err := local.ExecuteLocal(
 						command,
+						aliasEntry.Dir,
 						params,
 						unknownFlags,
 						envs,

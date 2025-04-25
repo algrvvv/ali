@@ -14,8 +14,7 @@ type AliasEntry struct {
 	Desc      string         `mapstructure:"desc"`
 	Env       map[string]any `mapstructure:"env"`
 	Parallel  bool           `mapstructure:"parallel"`
-	// TODO: реализовать
-	Dir string `mapstructure:"dir"`
+	Dir       string         `mapstructure:"dir"`
 }
 
 func LoadAliases(v *viper.Viper) map[string]AliasEntry {

@@ -13,9 +13,9 @@ import (
 )
 
 func PrepareCommand(
-	command string, args []string,
-	flags map[string]string, envs map[string]any,
-	print bool,
+	command string, dir string,
+	args []string, flags map[string]string,
+	envs map[string]any, print bool,
 ) (*exec.Cmd, error) {
 	// проверяем аргументы, чтобы при пробелах в них мы не получили их как разные аргументы
 	for i := range args {
@@ -95,6 +95,24 @@ func PrepareCommand(
 		logger.SaveDebugf("Unsupported OS")
 		return nil, errors.New("unsupported OS")
 	}
+
+	if dir != "" && dir != "." {
+		logger.SaveDebugf("entry use dir for exec: %q", dir)
+		cmd.Dir = dir
+		if strings.HasPrefix(dir, "~") {
+			logger.SaveDebugf("user use ~ in dir param")
+			home, err := os.UserHomeDir()
+			if err != nil {
+				return nil, errors.New("failed to get user home dir")
+			}
+
+			logger.SaveDebugf("got home user dir: %q", home)
+			dir = strings.Replace(dir, "~", home, 1)
+			logger.SaveDebugf("command dir after change ~ to home dir: %q", dir)
+		}
+		// resultCmd = fmt.Sprintf("cd %s && %s", dir, resultCmd)
+	}
+	cmd.Dir = dir
 
 	// работаем с env
 	cmdEnv := os.Environ()
