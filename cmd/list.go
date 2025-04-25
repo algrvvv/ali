@@ -41,7 +41,7 @@ const (
 
 // listCmd represents the list command
 var (
-	fullPrint      bool
+	tablePrint     bool
 	printVariables bool
 	printEnvsFlag  bool
 
@@ -84,12 +84,12 @@ func printEnvs(search string) {
 		}
 	}
 
-	if fullPrint {
-		envsFullPrint(envs, search)
+	if tablePrint {
+		envsTablePrint(envs, search)
 		return
 	}
 
-	envsTablePrint(envs, search)
+	envsFullPrint(envs, search)
 }
 
 func envsFullPrint(envs map[string]any, search string) {
@@ -118,12 +118,12 @@ func envsFullPrint(envs map[string]any, search string) {
 }
 
 func envsTablePrint(envs map[string]any, search string) {
-	fmt.Printf("+%s+%s+\n", strings.Repeat("-", 22), strings.Repeat("-", 42))
+	fmt.Printf("+%s+%s+\n", strings.Repeat("-", 30), strings.Repeat("-", 42))
 	fmt.Printf("| Env%s| Command%s|\n",
-		strings.Repeat(" ", 22-len(" alias")),
+		strings.Repeat(" ", 32-len(" alias")),
 		strings.Repeat(" ", 42-len(" command")),
 	)
-	fmt.Printf("+%s+%s+\n", strings.Repeat("-", 22), strings.Repeat("-", 42))
+	fmt.Printf("+%s+%s+\n", strings.Repeat("-", 30), strings.Repeat("-", 42))
 
 	for name, value := range envs {
 		if !searchInEnvs(search, name) {
@@ -136,14 +136,14 @@ func envsTablePrint(envs map[string]any, search string) {
 			return strings.ToLower(alias)
 		})
 
-		fmt.Printf("| %s%-20s%s | %-40s |\n",
+		fmt.Printf("| %s%-28s%s | %-40s |\n",
 			utils.Colors["red"],
-			utils.TruncateString(name, 20),
+			utils.TruncateString(name, 28),
 			resetColor,
 			utils.TruncateString(fmt.Sprintf("%v", value), 40),
 		)
 
-		fmt.Printf("+%s+%s+\n", strings.Repeat("-", 22), strings.Repeat("-", 42))
+		fmt.Printf("+%s+%s+\n", strings.Repeat("-", 30), strings.Repeat("-", 42))
 	}
 }
 
@@ -170,12 +170,12 @@ func printVars(search string) {
 	logger.SaveDebugf("print variables")
 	fmt.Println("Available Variables:")
 
-	if fullPrint {
-		varsFullPrint(vars, search)
+	if tablePrint {
+		varsTablePrint(vars, search)
 		return
 	}
 
-	varsTablePrint(vars, search)
+	varsFullPrint(vars, search)
 }
 
 func varsFullPrint(vars map[string]string, search string) {
@@ -198,7 +198,7 @@ func varsFullPrint(vars map[string]string, search string) {
 func varsTablePrint(vars map[string]string, search string) {
 	fmt.Printf("+%s+%s+\n", strings.Repeat("-", 22), strings.Repeat("-", 42))
 	fmt.Printf("| Var%s| Command%s|\n",
-		strings.Repeat(" ", 22-len(" alias")),
+		strings.Repeat(" ", 24-len(" alias")),
 		strings.Repeat(" ", 42-len(" command")),
 	)
 	fmt.Printf("+%s+%s+\n", strings.Repeat("-", 22), strings.Repeat("-", 42))
@@ -239,11 +239,11 @@ func printAliases(search string) {
 	fmt.Println("Available Aliases:")
 	aliases := utils.LoadAliases(viper.GetViper())
 
-	if fullPrint {
-		aliasFullPrint(aliases, search)
+	if tablePrint {
+		aliasTablePrint(aliases, search)
 		return
 	}
-	aliasTablePrint(aliases, search)
+	aliasFullPrint(aliases, search)
 }
 
 func aliasFullPrint(aliases map[string]utils.AliasEntry, search string) {
@@ -394,7 +394,7 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	listCmd.Flags().BoolVarP(&fullPrint, "full", "f", false, "use full print")
+	listCmd.Flags().BoolVarP(&tablePrint, "table", "T", false, "use table print")
 	listCmd.Flags().BoolVarP(&printVariables, "vars", "v", false, "print variables")
 	listCmd.Flags().BoolVarP(&printEnvsFlag, "envs", "e", false, "print envs")
 }
