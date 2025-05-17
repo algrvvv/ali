@@ -23,6 +23,7 @@ package cmd
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -54,18 +55,34 @@ var (
 			if err != nil {
 				utils.CheckError(err)
 			}
-			logger.SaveDebugf("failed to create templates dir")
+			fmt.Println("templates dir created")
+			logger.SaveDebugf("templates dir created")
+
+			pluginsDirPath := filepath.Join(configDir, utils.PluginsDirName)
+			err = os.MkdirAll(pluginsDirPath, 0777)
+			if err != nil {
+				utils.CheckError(err)
+			}
+			fmt.Println("plugins dir created")
+			logger.SaveDebugf("plugins dir created")
 
 			configPath := filepath.Join(configDir, "config.yml")
 			logger.SaveDebugf("got config path: %s", configPath)
 
-			viper.SetConfigFile(configPath)
-			viper.Set("aliases.test", "echo \"hello world\"")
-			viper.Set("app.editor", defaultEditor)
+			if _, err := os.Stat(configPath); err == nil {
+				fmt.Println("global config already exists. exit")
+				return
+			}
+
+			setupConfigViper := viper.New()
+			setupConfigViper.SetConfigFile(configPath)
+			setupConfigViper.Set("aliases.test", "echo \"hello world\"")
+			setupConfigViper.Set("app.editor", defaultEditor)
 			// viper.Set("app.default_config_type", utils.TomlConfigurationType)
 
-			err = viper.WriteConfig()
+			err = setupConfigViper.WriteConfig()
 			utils.CheckError(err)
+			fmt.Println("global config created")
 			logger.SaveDebugf("config writed")
 		},
 	}

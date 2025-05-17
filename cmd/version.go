@@ -29,7 +29,7 @@ import (
 
 const (
 	logo    = "       _ _ \n  __ _| (_)\n / _` | | |\n| (_| | | |\n \\__,_|_|_|"
-	version = "v2.0.0-beta.3.1"
+	version = "v2.0.0-beta.4.1"
 )
 
 // versionCmd represents the version command
@@ -42,7 +42,7 @@ var versionCmd = &cobra.Command{
 		fmt.Println()
 
 		fmt.Println("Created by: github.com/algrvvv")
-		fmt.Println("Vesion: " + version)
+		fmt.Println("Version: " + version)
 	},
 }
 
