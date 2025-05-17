@@ -46,7 +46,7 @@ var (
 	editTempl      bool
 	showTemplList  bool
 	templCmd       = &cobra.Command{
-		Use:   "templ",
+		Use:   "templ templName",
 		Short: "use template configuration",
 		Long:  `init new configuration by template`,
 		Run: func(cmd *cobra.Command, args []string) {
@@ -61,7 +61,7 @@ var (
 			}
 
 			if len(args) != 1 {
-				fmt.Println("failed to start `templ` command: expected templ name\nuse: ali templ templName --new")
+				fmt.Println("failed to start `templ` command: expected templ name\nuse: ali templ templName --new; or ali templ --list")
 				return
 			}
 
