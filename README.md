@@ -332,6 +332,11 @@ exec: python3 main.py
 
 you can use anything in this directory, the main thing is to specify how your plugin will run.
 
+launch plugin:
+```shell
+ali plug testPlug
+```
+
 show plugins list:
 ```shell
 ali plug --list
@@ -343,11 +348,6 @@ To get logs, use `--debug` or `-D`
 
 To use only local aliases, use `-L` or `--local-env`.
 This can be useful when using `ali list -L` to output only a list of local aliases.
-
-### TODO
-
-прокидывание флагов, которые не используются напрямую или подменой аргумента в команду.
-добавить логирование итоговой команды перед ее запуском.
 
 ### feature v2
 
@@ -363,6 +363,6 @@ This can be useful when using `ali list -L` to output only a list of local alias
 - [x] директория выполнения команды (dir);
 - [x] удалить возможность изменять путь к локальному конфигу;
 - [x] include;
-- [ ] почистить не используемый код;
+- [x] почистить не используемый код;
+- [x] дописать документацию в ридми
 - [ ] улучшить документацию команд именно в утилите, а не в доках
-- [ ] дописать документацию в ридми
