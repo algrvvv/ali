@@ -150,6 +150,20 @@ aliases:
       - echo "hello, $NAME"
 ```
 
+It is also possible to store environment variables in a separate file, which can be entered in .gitignore, so as not to publish in repositories.
+
+by default, the file name should match `.alienv`.
+in order to use another file, you can use 
+
+```shell
+ali --env-file=".another_env_file" yourAliasName
+```
+
+the syntax of such a file is the simplest. it's just a yaml key map value.
+```yaml
+key: value
+```
+
 ### Usage examples
 
 Pass arguments inside a command:
