@@ -22,7 +22,9 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"errors"
 	"fmt"
+	"maps"
 	"os"
 	"regexp"
 	"strings"
@@ -75,6 +77,11 @@ func printEnvs(search string) {
 	fmt.Println("Available Envs:")
 
 	envs := viper.GetStringMap("env")
+	hiddens, err := utils.LoadHiddenEnv(aliEnvFileFlag)
+	if err != nil && !errors.Is(err, utils.ErrHiddenEnvFileNotFound) {
+		utils.PrintError("failed to load hidden envs", nil)
+	}
+	maps.Copy(envs, hiddens)
 
 	aliases := utils.LoadAliases(viper.GetViper())
 	for alias, entry := range aliases {

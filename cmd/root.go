@@ -24,6 +24,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"maps"
 	"os"
 	"path/filepath"
 	"slices"
@@ -57,12 +58,13 @@ func init() {
 var (
 	localViper *viper.Viper
 
+	// doParallel         bool
 	debug              bool
 	localEnv           bool
-	doParallel         bool
 	withoutOutput      bool
 	outputColor        string
 	printResultCommand bool
+	aliEnvFileFlag     string
 
 	// rootCmd represents the base command when called without any subcommands
 	rootCmd = &cobra.Command{
@@ -93,7 +95,12 @@ var (
 				return
 			}
 
+			hiddenEnvs, err := utils.LoadHiddenEnv(aliEnvFileFlag)
+			if err != nil && !errors.Is(err, utils.ErrHiddenEnvFileNotFound) {
+				utils.PrintError("failed to load hidden envs", nil)
+			}
 			envs := utils.GetEnvs(aliasEntry)
+			maps.Copy(envs, hiddenEnvs)
 
 			if aliasEntry.Parallel {
 				parallel.ExecuteParallel(
@@ -164,10 +171,13 @@ func init() {
 	// when this action is called directly.
 	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "D", false, "print debug messages")
 	rootCmd.PersistentFlags().BoolVarP(&localEnv, "local-env", "L", false, "use only local env")
-	rootCmd.PersistentFlags().BoolVarP(&doParallel, "parallel", "p", false, "do parallel command")
 	rootCmd.PersistentFlags().BoolVar(&withoutOutput, "without-output", false, "dont show parallel commands output")
 	rootCmd.PersistentFlags().StringVar(&outputColor, "output-color", "", "color of the ouput of the parallel command")
+	rootCmd.PersistentFlags().StringVar(&aliEnvFileFlag, "env-file", ".alienv", "file for load hidden envs")
 	rootCmd.Flags().BoolVar(&printResultCommand, "print", false, "print result command before start exec")
+
+	// NOTE: not used
+	// rootCmd.PersistentFlags().BoolVarP(&doParallel, "parallel", "p", false, "do parallel command")
 
 	// WARN: only for dev
 	// rootCmd.PersistentFlags().StringVar(&localConfig, "local-config", ".ali", "local config path")
