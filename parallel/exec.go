@@ -8,8 +8,8 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/algrvvv/ali/logger"
-	"github.com/algrvvv/ali/utils"
+	"github.com/algrvvv/ali/v2/logger"
+	"github.com/algrvvv/ali/v2/utils"
 )
 
 func Exec(command Command, outputColor string, withoutOutput bool, wg *sync.WaitGroup) {

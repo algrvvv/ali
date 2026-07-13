@@ -1,4 +1,4 @@
-module github.com/algrvvv/ali
+module github.com/algrvvv/ali/v2
 
 go 1.23.3
 

@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/algrvvv/ali/utils"
+	"github.com/algrvvv/ali/v2/utils"
 	"github.com/pelletier/go-toml/v2"
 	"gopkg.in/yaml.v3"
 )

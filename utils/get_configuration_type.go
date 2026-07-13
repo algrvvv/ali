@@ -5,7 +5,7 @@ import (
 	"errors"
 	"os"
 
-	"github.com/algrvvv/ali/logger"
+	"github.com/algrvvv/ali/v2/logger"
 
 	"github.com/pelletier/go-toml/v2"
 	"gopkg.in/yaml.v3"

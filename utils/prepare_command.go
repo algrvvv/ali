@@ -8,7 +8,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/algrvvv/ali/logger"
+	"github.com/algrvvv/ali/v2/logger"
 	"github.com/spf13/viper"
 )
 

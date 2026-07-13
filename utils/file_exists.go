@@ -4,7 +4,7 @@ import (
 	"errors"
 	"os"
 
-	"github.com/algrvvv/ali/logger"
+	"github.com/algrvvv/ali/v2/logger"
 )
 
 func FileExists(path string) bool {

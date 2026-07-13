@@ -3,7 +3,7 @@ package utils
 import (
 	"fmt"
 
-	"github.com/algrvvv/ali/logger"
+	"github.com/algrvvv/ali/v2/logger"
 )
 
 // PrintError функция, которая выводит краткую информацию

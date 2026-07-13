@@ -33,10 +33,10 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/algrvvv/ali/local"
-	"github.com/algrvvv/ali/logger"
-	"github.com/algrvvv/ali/parallel"
-	"github.com/algrvvv/ali/utils"
+	"github.com/algrvvv/ali/v2/local"
+	"github.com/algrvvv/ali/v2/logger"
+	"github.com/algrvvv/ali/v2/parallel"
+	"github.com/algrvvv/ali/v2/utils"
 )
 
 const localConfig = ".ali"

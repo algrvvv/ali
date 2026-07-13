@@ -32,8 +32,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/algrvvv/ali/logger"
-	"github.com/algrvvv/ali/utils"
+	"github.com/algrvvv/ali/v2/logger"
+	"github.com/algrvvv/ali/v2/utils"
 )
 
 const (

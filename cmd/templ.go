@@ -29,8 +29,8 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/algrvvv/ali/logger"
-	"github.com/algrvvv/ali/utils"
+	"github.com/algrvvv/ali/v2/logger"
+	"github.com/algrvvv/ali/v2/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

@@ -26,7 +26,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/algrvvv/ali/utils"
+	"github.com/algrvvv/ali/v2/utils"
 )
 
 // completionCmd represents the completion command

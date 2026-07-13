@@ -21,7 +21,7 @@ THE SOFTWARE.
 */
 package main
 
-import "github.com/algrvvv/ali/cmd"
+import "github.com/algrvvv/ali/v2/cmd"
 
 func main() {
 	cmd.Execute()

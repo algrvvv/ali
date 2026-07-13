@@ -8,7 +8,7 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/algrvvv/ali/utils"
+	"github.com/algrvvv/ali/v2/utils"
 )
 
 func ExecuteParallel(

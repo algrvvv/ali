@@ -3,7 +3,7 @@ package utils_test
 import (
 	"testing"
 
-	"github.com/algrvvv/ali/utils"
+	"github.com/algrvvv/ali/v2/utils"
 )
 
 func TestGetVariables(t *testing.T) {

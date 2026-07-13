@@ -3,7 +3,7 @@ package local
 import (
 	"fmt"
 
-	"github.com/algrvvv/ali/utils"
+	"github.com/algrvvv/ali/v2/utils"
 )
 
 func ExecuteLocal(
