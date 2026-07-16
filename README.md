@@ -12,7 +12,7 @@ ali - cli utility for more convenient and quick work with routine teams
 install by `go install`:
 
 ```shell
-go install github.com/algrvvv/ali@latest
+go install github.com/algrvvv/ali/v2@latest
 ```
 
 setup global config
