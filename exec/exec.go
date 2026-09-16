@@ -1,4 +1,4 @@
-package parallel
+package exec
 
 import (
 	"bufio"
@@ -10,6 +10,7 @@ import (
 
 	"github.com/algrvvv/ali/v2/logger"
 	"github.com/algrvvv/ali/v2/utils"
+	"github.com/algrvvv/ali/v2/vars"
 )
 
 func Exec(command Command, outputColor string, withoutOutput bool, wg *sync.WaitGroup) {
@@ -18,13 +19,13 @@ func Exec(command Command, outputColor string, withoutOutput bool, wg *sync.Wait
 	commandLabel := utils.Colorize(command.Label, command.Color)
 	label := utils.Colorize(fmt.Sprintf("[%s]", command.Label), command.Color)
 
-	vars, err := utils.GetVars()
+	variables, err := vars.Load()
 	if err != nil {
 		logger.SaveDebugf("failed to get all vars: %v", err)
 		fmt.Println("failed to get vars. skip")
 	} else {
-		logger.SaveDebugf("got vars: %v", vars)
-		command.Command = utils.GetVariables(command.Command, vars)
+		logger.SaveDebugf("got vars: %v", variables)
+		command.Command = vars.GetVariables(command.Command, variables)
 	}
 
 	fmt.Printf("Running command: %s\n", commandLabel)

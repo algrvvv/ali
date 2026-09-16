@@ -1,4 +1,4 @@
-package parallel
+package exec
 
 import (
 	"fmt"
@@ -8,11 +8,12 @@ import (
 	"sync"
 	"syscall"
 
+	"github.com/algrvvv/ali/v2/aliases"
 	"github.com/algrvvv/ali/v2/utils"
 )
 
 func ExecuteParallel(
-	entry *utils.AliasEntry, params []string,
+	entry *aliases.AliasEntry, params []string,
 	flags map[string]string, envs map[string]any,
 	printResultCommands bool,
 ) {
@@ -34,7 +35,7 @@ func ExecuteParallel(
 		go func() {
 			defer wg.Done()
 
-			cmd, err := utils.PrepareCommand(
+			cmd, err := PrepareCommand(
 				command,
 				entry.Dir,
 				params,

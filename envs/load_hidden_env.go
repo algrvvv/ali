@@ -1,4 +1,4 @@
-package utils
+package envs
 
 import (
 	"errors"
@@ -9,6 +9,7 @@ import (
 
 var ErrHiddenEnvFileNotFound = errors.New("hidden envs file not found")
 
+// LoadHiddenEnv функция для загрузки yaml файла енва
 func LoadHiddenEnv(filepath string) (map[string]any, error) {
 	data, err := os.ReadFile(filepath)
 	if err != nil {

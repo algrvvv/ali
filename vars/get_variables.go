@@ -1,4 +1,4 @@
-package utils
+package vars
 
 import (
 	"regexp"
@@ -11,7 +11,7 @@ type varConfig struct {
 	Vars map[string]string `mapstructure:"vars"`
 }
 
-func GetVars() (map[string]string, error) {
+func Load() (map[string]string, error) {
 	var vars varConfig
 
 	err := viper.Unmarshal(&vars)

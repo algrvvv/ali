@@ -27,6 +27,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/algrvvv/ali/v2/plugins"
+	"github.com/algrvvv/ali/v2/templates"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -50,7 +52,7 @@ var (
 			}
 			logger.SaveDebugf("got config dir: %s", configDir)
 
-			templatesDirPath := filepath.Join(configDir, utils.TemplateDirName)
+			templatesDirPath := filepath.Join(configDir, templates.DirName)
 			err = os.MkdirAll(templatesDirPath, 0777)
 			if err != nil {
 				utils.CheckError(err)
@@ -58,7 +60,7 @@ var (
 			fmt.Println("templates dir created")
 			logger.SaveDebugf("templates dir created")
 
-			pluginsDirPath := filepath.Join(configDir, utils.PluginsDirName)
+			pluginsDirPath := filepath.Join(configDir, plugins.DirName)
 			err = os.MkdirAll(pluginsDirPath, 0777)
 			if err != nil {
 				utils.CheckError(err)
@@ -91,13 +93,5 @@ var (
 func init() {
 	rootCmd.AddCommand(setupCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// setupCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
 	setupCmd.Flags().StringVarP(&defaultEditor, "editor", "e", "vi", "use as configuration editor")
 }
