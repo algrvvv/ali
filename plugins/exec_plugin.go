@@ -20,6 +20,7 @@ func Exec(name string, params []string) {
 		utils.PrintError("failed to get plugin", err)
 		return
 	}
+	logger.SaveDebugf("plugin path: %s", pluginPath)
 
 	if _, err = os.Stat(pluginPath); err != nil {
 		utils.PrintError("plugin not found", err)
@@ -31,6 +32,7 @@ func Exec(name string, params []string) {
 		utils.PrintError("plugin disabled", err)
 		return
 	}
+	logger.SaveDebugf("plugin config path: %s", pluginConfigPath)
 
 	v, err := GetViperForPlugin(pluginConfigPath)
 	if err != nil {
@@ -43,6 +45,7 @@ func Exec(name string, params []string) {
 		fmt.Println("empty exec param for plugin")
 		return
 	}
+	logger.SaveDebugf("exec plugin command: %s", execCommand)
 
 	for _, param := range params {
 		paramParts := strings.Split(param, "=")

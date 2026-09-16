@@ -23,9 +23,11 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/algrvvv/ali/v2/logger"
 	"github.com/algrvvv/ali/v2/plugins"
+	"github.com/algrvvv/ali/v2/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -34,8 +36,9 @@ var (
 	createNewPlug bool
 	showPlugList  bool
 	plugCmd       = &cobra.Command{
-		Use:   "plug plugin-name",
-		Short: "work with plugins",
+		Use:                "plug plugin-name",
+		Short:              "work with plugins",
+		FParseErrWhitelist: cobra.FParseErrWhitelist{UnknownFlags: true},
 		Run: func(cmd *cobra.Command, args []string) {
 			if showPlugList {
 				plugins.Show()
@@ -55,7 +58,13 @@ var (
 				return
 			}
 
-			params := args[1:]
+			// начинаем с третьей, так как вызов идет:
+			//  1	2		3
+			// ali plug plugName
+			unknownArgs, unknownFlags := utils.ParseUnknownArgs(os.Args[3:])
+			params := utils.MergeUnknownFlagsAndArgs(unknownFlags, unknownArgs)
+			logger.SaveDebugf("got args: %v", params)
+
 			plugins.Exec(plugName, params)
 		},
 	}
