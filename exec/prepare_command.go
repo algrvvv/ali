@@ -1,4 +1,4 @@
-package utils
+package exec
 
 import (
 	"errors"
@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/algrvvv/ali/v2/logger"
+	"github.com/algrvvv/ali/v2/vars"
 	"github.com/spf13/viper"
 )
 
@@ -70,13 +71,13 @@ func PrepareCommand(
 	}
 
 	resultCmd := cmdArgs
-	vars, err := GetVars()
+	variables, err := vars.Load()
 	if err != nil {
 		logger.SaveDebugf("failed to get all vars: %v", err)
 		fmt.Println("failed to get vars. skip")
 	} else {
-		logger.SaveDebugf("got vars: %v", vars)
-		resultCmd = GetVariables(cmdArgs, vars)
+		logger.SaveDebugf("got vars: %v", variables)
+		resultCmd = vars.GetVariables(cmdArgs, variables)
 	}
 
 	logger.SaveDebugf("result command to execute: %s", resultCmd)

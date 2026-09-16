@@ -1,9 +1,7 @@
-package local
+package exec
 
 import (
 	"fmt"
-
-	"github.com/algrvvv/ali/v2/utils"
 )
 
 func ExecuteLocal(
@@ -12,7 +10,7 @@ func ExecuteLocal(
 	flags map[string]string, envs map[string]any,
 	printResultCommands bool,
 ) error {
-	cmd, err := utils.PrepareCommand(
+	cmd, err := PrepareCommand(
 		command,
 		dir,
 		params,

@@ -1,6 +1,8 @@
-package utils
+package aliases
 
-import "slices"
+import (
+	"slices"
+)
 
 func SearchSynonyms(aliases map[string]AliasEntry, search string) *AliasEntry {
 	// сначала ищем только по основному алиасу, а не по синонимам

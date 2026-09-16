@@ -1,4 +1,4 @@
-package utils
+package aliases
 
 import (
 	"fmt"
@@ -17,7 +17,7 @@ type AliasEntry struct {
 	Dir       string         `mapstructure:"dir"`
 }
 
-func LoadAliases(v *viper.Viper) map[string]AliasEntry {
+func Load(v *viper.Viper) map[string]AliasEntry {
 	raw := v.GetStringMap("aliases")
 	out := make(map[string]AliasEntry)
 

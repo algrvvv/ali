@@ -1,13 +1,13 @@
-package utils_test
+package vars_test
 
 import (
 	"testing"
 
-	"github.com/algrvvv/ali/v2/utils"
+	"github.com/algrvvv/ali/v2/vars"
 )
 
 func TestGetVariables(t *testing.T) {
-	vars := map[string]string{
+	v := map[string]string{
 		"execute":   "./twentyone",
 		"user_flag": "--user=algrvvv",
 		"name":      "go run main.go",
@@ -26,7 +26,7 @@ func TestGetVariables(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		got := utils.GetVariables(test.input, vars)
+		got := vars.GetVariables(test.input, v)
 		if got != test.expected {
 			t.Errorf("ERROR: want: %s; got: %s", test.expected, got)
 		} else {

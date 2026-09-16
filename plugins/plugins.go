@@ -1,16 +1,17 @@
-package utils
+package plugins
 
 import (
 	"fmt"
 	"os"
 	"path/filepath"
 
+	"github.com/algrvvv/ali/v2/utils"
 	"github.com/spf13/viper"
 )
 
 const (
-	PluginsDirName   = "plugins"
-	PluginConfigName = "ali-plugin.yml"
+	DirName    = "plugins"
+	ConfigName = "ali-plugin.yml"
 )
 
 func GetPluginsDir() (string, error) {
@@ -20,7 +21,7 @@ func GetPluginsDir() (string, error) {
 	}
 	configDir := filepath.Join(home, ".ali")
 
-	pluginsDirPath := filepath.Join(configDir, PluginsDirName)
+	pluginsDirPath := filepath.Join(configDir, DirName)
 	return pluginsDirPath, nil
 }
 
@@ -47,25 +48,25 @@ func GetPlugins() ([]string, error) {
 	var plugins []string
 	for idx, entry := range entries {
 		pluginPath := filepath.Join(pluginDir, entry.Name())
-		pluginConfigPath := filepath.Join(pluginPath, PluginConfigName)
+		pluginConfigPath := filepath.Join(pluginPath, ConfigName)
 
 		var pluginDesc string
 		var pluginStatus string
 
 		v, err := GetViperForPlugin(pluginConfigPath)
 		if err == nil {
-			pluginDesc = fmt.Sprintf("\n%s%s%s", Colors["gray"], v.GetString("desc"), Colors["reset"])
+			pluginDesc = fmt.Sprintf("\n%s%s%s", utils.Colors["gray"], v.GetString("desc"), utils.Colors["reset"])
 			if v.GetString("exec") == "" {
-				pluginStatus = fmt.Sprintf("%s[!] plugin disabled: invalid exec param%s", Colors["red"], Colors["reset"])
+				pluginStatus = fmt.Sprintf("%s[!] plugin disabled: invalid exec param%s", utils.Colors["red"], utils.Colors["reset"])
 			}
 		}
 
 		if _, err := os.Stat(pluginConfigPath); err != nil {
-			pluginStatus = fmt.Sprintf("%s[!] plugin disabled: plugin config not found%s", Colors["red"], Colors["reset"])
+			pluginStatus = fmt.Sprintf("%s[!] plugin disabled: plugin config not found%s", utils.Colors["red"], utils.Colors["reset"])
 		}
 
 		if pluginStatus == "" {
-			pluginStatus = fmt.Sprintf("%s[+] ok%s", Colors["green"], Colors["reset"])
+			pluginStatus = fmt.Sprintf("%s[+] ok%s", utils.Colors["green"], utils.Colors["reset"])
 		}
 
 		e := fmt.Sprintf("%d. %-20s(%s)\t%s%s",

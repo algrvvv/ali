@@ -1,11 +1,11 @@
-package utils
+package templates
 
 import (
 	"path/filepath"
 	"strings"
 )
 
-const TemplateDirName = "templates"
+const DirName = "templates"
 
 func GetTemplNameByFile(filename string) string {
 	ext := filepath.Ext(filename)

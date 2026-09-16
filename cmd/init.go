@@ -31,6 +31,8 @@ import (
 	"github.com/algrvvv/ali/v2/utils"
 )
 
+const localConfig = ".ali"
+
 // initCmd represents the init command
 var (
 	configFormat string = utils.YamlConfigurationType
@@ -69,33 +71,12 @@ var (
 
 			utils.CheckError(err)
 			utils.CheckError(f.Close())
-
-			// files, err := os.ReadDir(dir)
-			// utils.CheckError(err)
-			// for _, f := range files {
-			// 	if f.Name() == localConfig {
-			// 		logger.SaveDebugf("local config file founded")
-			// 		fmt.Println(f.Name())
-			// 		return
-			// 	}
-			// }
-			//
-			// fmt.Println("local config file not found")
 		},
 	}
 )
 
 func init() {
 	rootCmd.AddCommand(initCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// initCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
 
 	// NOTE: больше не поддерживается
 	// initCmd.Flags().StringVarP(&configFormat, "format", "F", utils.YamlConfigurationType, "new local config type")

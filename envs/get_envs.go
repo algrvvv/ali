@@ -1,13 +1,14 @@
-package utils
+package envs
 
 import (
 	"maps"
 
+	"github.com/algrvvv/ali/v2/aliases"
 	"github.com/algrvvv/ali/v2/logger"
 	"github.com/spf13/viper"
 )
 
-func GetEnvs(alias *AliasEntry) map[string]any {
+func GetEnvs(alias *aliases.AliasEntry) map[string]any {
 	// здесь мы получаем и глобальные переменные
 	// окружения и для конкретной команды (алиаса)
 	logger.SaveDebugf("search envs for %s", alias.AliasName)

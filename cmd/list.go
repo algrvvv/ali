@@ -29,6 +29,9 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/algrvvv/ali/v2/aliases"
+	"github.com/algrvvv/ali/v2/envs"
+	"github.com/algrvvv/ali/v2/vars"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -76,27 +79,27 @@ func printEnvs(search string) {
 	logger.SaveDebugf("print envs")
 	fmt.Println("Available Envs:")
 
-	envs := viper.GetStringMap("env")
-	hiddens, err := utils.LoadHiddenEnv(aliEnvFileFlag)
-	if err != nil && !errors.Is(err, utils.ErrHiddenEnvFileNotFound) {
+	env := viper.GetStringMap("env")
+	hiddens, err := envs.LoadHiddenEnv(aliEnvFileFlag)
+	if err != nil && !errors.Is(err, envs.ErrHiddenEnvFileNotFound) {
 		utils.PrintError("failed to load hidden envs", nil)
 	}
-	maps.Copy(envs, hiddens)
+	maps.Copy(env, hiddens)
 
-	aliases := utils.LoadAliases(viper.GetViper())
-	for alias, entry := range aliases {
+	als := aliases.Load(viper.GetViper())
+	for alias, entry := range als {
 		for name, value := range entry.Env {
 			key := fmt.Sprintf("%s (%s)", name, alias)
-			envs[key] = value
+			env[key] = value
 		}
 	}
 
 	if tablePrint {
-		envsTablePrint(envs, search)
+		envsTablePrint(env, search)
 		return
 	}
 
-	envsFullPrint(envs, search)
+	envsFullPrint(env, search)
 }
 
 func envsFullPrint(envs map[string]any, search string) {
@@ -167,7 +170,7 @@ func searchInEnvs(search, envName string) bool {
 }
 
 func printVars(search string) {
-	vars, err := utils.GetVars()
+	variables, err := vars.Load()
 	if err != nil {
 		fmt.Println("failed to get vars")
 		logger.SaveDebugf("failed to get vars: %s", err)
@@ -178,11 +181,11 @@ func printVars(search string) {
 	fmt.Println("Available Variables:")
 
 	if tablePrint {
-		varsTablePrint(vars, search)
+		varsTablePrint(variables, search)
 		return
 	}
 
-	varsFullPrint(vars, search)
+	varsFullPrint(variables, search)
 }
 
 func varsFullPrint(vars map[string]string, search string) {
@@ -244,16 +247,16 @@ func searchInVars(search, varName, varValue string) bool {
 
 func printAliases(search string) {
 	fmt.Println("Available Aliases:")
-	aliases := utils.LoadAliases(viper.GetViper())
+	als := aliases.Load(viper.GetViper())
 
 	if tablePrint {
-		aliasTablePrint(aliases, search)
+		aliasTablePrint(als, search)
 		return
 	}
-	aliasFullPrint(aliases, search)
+	aliasFullPrint(als, search)
 }
 
-func aliasFullPrint(aliases map[string]utils.AliasEntry, search string) {
+func aliasFullPrint(aliases map[string]aliases.AliasEntry, search string) {
 	var count int
 	for alias, entry := range aliases {
 		if !searchInAlias(search, alias, entry) {
@@ -305,7 +308,7 @@ func aliasFullPrint(aliases map[string]utils.AliasEntry, search string) {
 	}
 }
 
-func aliasTablePrint(aliases map[string]utils.AliasEntry, search string) {
+func aliasTablePrint(aliases map[string]aliases.AliasEntry, search string) {
 	fmt.Printf("+%s+%s+%s+\n", strings.Repeat("-", 22), strings.Repeat("-", 42), strings.Repeat("-", 30))
 	fmt.Printf("| Alias%s| Command%s| Description%s|\n",
 		strings.Repeat(" ", 22-len(" alias")),
@@ -358,7 +361,7 @@ func aliasTablePrint(aliases map[string]utils.AliasEntry, search string) {
 	}
 }
 
-func searchInAlias(search, alias string, entry utils.AliasEntry) bool {
+func searchInAlias(search, alias string, entry aliases.AliasEntry) bool {
 	// пропуск поиска
 	if search == "" {
 		return true
@@ -393,14 +396,6 @@ func searchInAlias(search, alias string, entry utils.AliasEntry) bool {
 func init() {
 	rootCmd.AddCommand(listCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// listCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
 	listCmd.Flags().BoolVarP(&tablePrint, "table", "T", false, "use table print")
 	listCmd.Flags().BoolVarP(&printVariables, "vars", "v", false, "print variables")
 	listCmd.Flags().BoolVarP(&printEnvsFlag, "envs", "e", false, "print envs")
