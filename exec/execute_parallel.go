@@ -13,8 +13,10 @@ import (
 )
 
 func ExecuteParallel(
-	entry *aliases.AliasEntry, params []string,
-	flags map[string]string, envs map[string]any,
+	entry *aliases.AliasEntry,
+	params []string,
+	flags map[string]string,
+	envs map[string]any,
 	printResultCommands bool,
 ) {
 	wg := &sync.WaitGroup{}

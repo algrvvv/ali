@@ -14,9 +14,12 @@ import (
 )
 
 func PrepareCommand(
-	command string, dir string,
-	args []string, flags map[string]string,
-	envs map[string]any, print bool,
+	command string,
+	dir string,
+	args []string,
+	flags map[string]string,
+	envs map[string]any,
+	print bool,
 ) (*exec.Cmd, error) {
 	// проверяем аргументы, чтобы при пробелах в них мы не получили их как разные аргументы
 	for i := range args {
@@ -32,12 +35,14 @@ func PrepareCommand(
 	for key, value := range flags {
 		logger.SaveDebugf("got key: %s", key)
 
+		// отбрасываем принт ключ
 		preparedKey := strings.TrimLeft(key, "-")
 		if print && preparedKey == "print" {
 			logger.SaveDebugf("user want to print result")
 			continue
 		}
 
+		// проверяем на изменение вары
 		if strings.Contains(key, "V_") {
 			varToChange := strings.Replace(key, "V_", "", 1)
 			varToChange = strings.TrimLeft(varToChange, "-")

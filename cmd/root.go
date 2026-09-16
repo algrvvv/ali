@@ -26,6 +26,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/algrvvv/ali/v2/aliases"
 	"github.com/algrvvv/ali/v2/config"
@@ -77,11 +78,13 @@ var (
 			}
 
 			alias := args[0]
-			params := args[1:]
-			unknownFlags := utils.ParseUnknownFlags(os.Args[1:])
+			//params := args[1:]
+			unknownArgs, unknownFlags := utils.ParseUnknownArgs(os.Args[2:])
+			params := strings.Split(unknownArgs, " ")
 
 			logger.SaveDebugf("got alias: %s", alias)
 			logger.SaveDebugf("got params(%d): %v", len(params), params)
+			logger.SaveDebugf("got unknown args: %v", unknownArgs)
 			logger.SaveDebugf("got unknown flags: %v", unknownFlags)
 
 			als := aliases.Load(viper.GetViper())
