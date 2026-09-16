@@ -5,9 +5,11 @@ import (
 )
 
 func ExecuteLocal(
-	command string, dir string,
+	command string,
+	dir string,
 	params []string,
-	flags map[string]string, envs map[string]any,
+	flags map[string]string,
+	envs map[string]any,
 	printResultCommands bool,
 ) error {
 	cmd, err := PrepareCommand(

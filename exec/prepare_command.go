@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"regexp"
 	"runtime"
 	"strings"
 
@@ -14,9 +15,12 @@ import (
 )
 
 func PrepareCommand(
-	command string, dir string,
-	args []string, flags map[string]string,
-	envs map[string]any, print bool,
+	command string,
+	dir string,
+	args []string,
+	flags map[string]string,
+	envs map[string]any,
+	print bool,
 ) (*exec.Cmd, error) {
 	// проверяем аргументы, чтобы при пробелах в них мы не получили их как разные аргументы
 	for i := range args {
@@ -32,12 +36,14 @@ func PrepareCommand(
 	for key, value := range flags {
 		logger.SaveDebugf("got key: %s", key)
 
+		// отбрасываем принт ключ
 		preparedKey := strings.TrimLeft(key, "-")
 		if print && preparedKey == "print" {
 			logger.SaveDebugf("user want to print result")
 			continue
 		}
 
+		// проверяем на изменение вары
 		if strings.Contains(key, "V_") {
 			varToChange := strings.Replace(key, "V_", "", 1)
 			varToChange = strings.TrimLeft(varToChange, "-")
@@ -49,10 +55,16 @@ func PrepareCommand(
 			continue
 		}
 
-		k := fmt.Sprintf("<%s>", strings.ReplaceAll(key, "-", ""))
-		logger.SaveDebugf("parse command for find flag: %s with value: %s", k, value)
-		if strings.Contains(command, k) {
-			command = strings.ReplaceAll(command, k, value)
+		// подмена переменных в команде
+		cleanKey := strings.ReplaceAll(key, "-", "")
+		pattern := fmt.Sprintf("<\\??%s>", regexp.QuoteMeta(cleanKey))
+		re := regexp.MustCompile(pattern)
+		logger.SaveDebugf("parse command for find flag pattern: %s with value: %s", pattern, value)
+
+		// k := fmt.Sprintf("<%s>", strings.ReplaceAll(key, "-", ""))
+		// logger.SaveDebugf("parse command for find flag: %s with value: %s", k, value)
+		if re.MatchString(command) {
+			command = re.ReplaceAllString(command, value)
 		} else {
 			if value == "" {
 				command += " " + key
@@ -60,6 +72,17 @@ func PrepareCommand(
 				command += " " + fmt.Sprintf("%s=%s", key, value)
 			}
 		}
+	}
+
+	// находим необязательные параметры
+	// <?test>
+	re := regexp.MustCompile(`<\?([^>]+)>`)
+	allUnrequiredArgs := re.FindAllString(command, -1)
+	logger.SaveDebugf("got all unrequired arguments: %v", allUnrequiredArgs)
+
+	// удаляем необязательные параметры
+	for _, unreqArg := range allUnrequiredArgs {
+		command = strings.Replace(command, unreqArg, "", 1)
 	}
 
 	cmdArgs := fmt.Sprintf("%s %s", command, strings.Join(args, " "))
