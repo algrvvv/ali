@@ -22,9 +22,7 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"errors"
 	"fmt"
-	"maps"
 	"os"
 	"regexp"
 	"strings"
@@ -66,7 +64,7 @@ var (
 			}
 
 			if printEnvsFlag {
-				printEnvs(search)
+				envs.Print(search, aliEnvFileFlag, tablePrint)
 				return
 			}
 
@@ -74,100 +72,6 @@ var (
 		},
 	}
 )
-
-func printEnvs(search string) {
-	logger.SaveDebugf("print envs")
-	fmt.Println("Available Envs:")
-
-	env := viper.GetStringMap("env")
-	hiddens, err := envs.LoadHiddenEnv(aliEnvFileFlag)
-	if err != nil && !errors.Is(err, envs.ErrHiddenEnvFileNotFound) {
-		utils.PrintError("failed to load hidden envs", nil)
-	}
-	maps.Copy(env, hiddens)
-
-	als := aliases.Load(viper.GetViper())
-	for alias, entry := range als {
-		for name, value := range entry.Env {
-			key := fmt.Sprintf("%s (%s)", name, alias)
-			env[key] = value
-		}
-	}
-
-	if tablePrint {
-		envsTablePrint(env, search)
-		return
-	}
-
-	envsFullPrint(env, search)
-}
-
-func envsFullPrint(envs map[string]any, search string) {
-	var count int
-	for name, value := range envs {
-		if !searchInEnvs(search, name) {
-			continue
-		}
-
-		prefix := "  └── "
-		if count != len(envs)-1 {
-			prefix = "  ├── "
-		}
-		count++
-
-		name = "$" + strings.ToUpper(name)
-		name = utils.Colors["red"] + name + resetColor
-
-		re := regexp.MustCompile(`\(([^)]+)\)`)
-		name = re.ReplaceAllStringFunc(name, func(alias string) string {
-			return color + strings.ToLower(alias) + resetColor
-		})
-
-		fmt.Printf("%s%s -> %v\n", prefix, name, value)
-	}
-}
-
-func envsTablePrint(envs map[string]any, search string) {
-	fmt.Printf("+%s+%s+\n", strings.Repeat("-", 30), strings.Repeat("-", 42))
-	fmt.Printf("| Env%s| Command%s|\n",
-		strings.Repeat(" ", 32-len(" alias")),
-		strings.Repeat(" ", 42-len(" command")),
-	)
-	fmt.Printf("+%s+%s+\n", strings.Repeat("-", 30), strings.Repeat("-", 42))
-
-	for name, value := range envs {
-		if !searchInEnvs(search, name) {
-			continue
-		}
-
-		name = "$" + strings.ToUpper(name)
-		re := regexp.MustCompile(`\(([^)]+)\)`)
-		name = re.ReplaceAllStringFunc(name, func(alias string) string {
-			return strings.ToLower(alias)
-		})
-
-		fmt.Printf("| %s%-28s%s | %-40s |\n",
-			utils.Colors["red"],
-			utils.TruncateString(name, 28),
-			resetColor,
-			utils.TruncateString(fmt.Sprintf("%v", value), 40),
-		)
-
-		fmt.Printf("+%s+%s+\n", strings.Repeat("-", 30), strings.Repeat("-", 42))
-	}
-}
-
-func searchInEnvs(search, envName string) bool {
-	if search == "" {
-		return true
-	}
-
-	if strings.Contains(envName, search) {
-		return true
-	}
-
-	return false
-}
 
 func printVars(search string) {
 	variables, err := vars.Load()

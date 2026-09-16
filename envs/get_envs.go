@@ -8,13 +8,15 @@ import (
 	"github.com/spf13/viper"
 )
 
-func GetEnvs(alias *aliases.AliasEntry) map[string]any {
+func GetAliasEnvs(alias *aliases.AliasEntry) map[string]any {
 	// здесь мы получаем и глобальные переменные
-	// окружения и для конкретной команды (алиаса)
-	logger.SaveDebugf("search envs for %s", alias.AliasName)
-
 	env := viper.GetStringMap("env")
-	maps.Copy(env, alias.Env)
+
+	if alias != nil {
+		// окружения и для конкретной команды (алиаса)
+		logger.SaveDebugf("search envs for %s", alias.AliasName)
+		maps.Copy(env, alias.Env)
+	}
 
 	return env
 }
